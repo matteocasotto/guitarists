@@ -35,6 +35,14 @@ class DatabaseManager:
         """Close the database's connection"""
         self.conn.close()
 
+    def clear(self):
+        """Delete all tables from the database"""
+        cursor = self.conn.cursor()
+
+        cursor.execute('DROP TABLE guitarists')
+        cursor.execute('DROP TABLE bands')
+        cursor.execute('DROP TABLE guitarists_and_bands')
+
     def _create_tables(self):
         cursor = self.conn.cursor()
         cursor.execute(create_guitarist_table)

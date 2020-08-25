@@ -1,4 +1,7 @@
 
+import argparse
+import os
+
 from database.database_manager import DatabaseManager
 
 list_of_guitarists = {'Eric Clapton': 'Cream',
@@ -16,8 +19,19 @@ list_of_guitarists = {'Eric Clapton': 'Cream',
                       }
 
 
-db_manager = DatabaseManager('guitarists.db')
+parser = argparse.ArgumentParser()
+parser.add_argument('d', '--delete', dest='delete',
+                    default=False, action='store_true', help='Delete database')
+args = parser.parse_args()
 
-for k, v in list_of_guitarists.items():
-    db_manager.add_guitarist_and_bands(k, v)
-db_manager.close_connection()
+database_file = 'guitarists.db'
+db_manager = DatabaseManager(database_file)
+
+if args.delete:
+    db_manager.clear()
+    db_manager.close_connection()
+    os.remove(database_file)
+else:
+    for k, v in list_of_guitarists.items():
+        db_manager.add_guitarist_and_bands(k, v)
+    db_manager.close_connection()
