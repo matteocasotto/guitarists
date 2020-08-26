@@ -146,6 +146,8 @@ class DatabaseManager:
         Parameters:
             guitarist_name (str): the name of the guitarist
         """
+        if not isinstance(guitarist_name, str):
+            return None
         cursor = self._conn.cursor()
         guitarist = self._get_guitarist_id_by_name(guitarist_name)
         band_list = []
@@ -171,6 +173,8 @@ class DatabaseManager:
         Parameters:
             band_name (str): the name of the band
         """
+        if not isinstance(band_name, str):
+            return None
         cursor = self._conn.cursor()
         band = self._get_band_id_by_name(band_name)
         guitarist_list = []
