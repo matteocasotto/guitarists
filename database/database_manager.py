@@ -72,11 +72,17 @@ class DatabaseManager:
 
         Parameters:
             guitarist_name (str): the name of the guitarist
-            bands (str): a list of bands
+            bands list(str): a list of bands
         """
+        if not isinstance(guitarist_name, str) or not isinstance(bands, (str, list)):
+            return
+        if not guitarist_name or not bands:
+            return
         cursor = self.conn.cursor()
         guitarist_id = self._add_guitarist(guitarist_name)
         if guitarist_id:
+            if isinstance(bands, str):
+                bands = [bands]
             for band in bands:
                 band_id = self._add_band(band)
                 if band_id:
@@ -88,7 +94,10 @@ class DatabaseManager:
         try:
             guitarist = cursor.execute('SELECT id FROM guitarists WHERE full_name=?',
                                        (guitarist_name,))
-            return guitarist.fetchone()[0]
+            guitarist = guitarist.fetchone()
+            if guitarist:
+                return guitarist[0]
+            return None
         except sqlite3.Error:
             return None
 
@@ -97,7 +106,10 @@ class DatabaseManager:
         try:
             band = cursor.execute('SELECT id FROM bands WHERE name=?',
                                   (band_name,))
-            return band.fetchone()[0]
+            band = band.fetchone()
+            if band:
+                return band[0]
+            return None
         except sqlite3.Error:
             return None
 
@@ -106,7 +118,10 @@ class DatabaseManager:
         try:
             guitarist = cursor.execute('SELECT full_name FROM guitarists WHERE id=?',
                                        (id,))
-            return guitarist.fetchone()[0]
+            guitarist = guitarist.fetchone()
+            if guitarist:
+                return guitarist[0]
+            return None
         except sqlite3.Error:
             return None
 
@@ -115,7 +130,10 @@ class DatabaseManager:
         try:
             band = cursor.execute('SELECT name FROM bands WHERE id=?',
                                   (id,))
-            return band.fetchone()[0]
+            band = band.fetchone()
+            if band:
+                return band[0]
+            return None
         except sqlite3.Error:
             return None
 
@@ -125,6 +143,8 @@ class DatabaseManager:
         Parameters:
             guitarist_name (str): the name of the guitarist
         """
+        if not isinstance(guitarist_name, str):
+            return None
         cursor = self.conn.cursor()
         guitarist = self._get_guitarist_id_by_name(guitarist_name)
         band_list = []
@@ -150,6 +170,8 @@ class DatabaseManager:
         Parameters:
             band_name (str): the name of the band
         """
+        if not isinstance(band_name, str):
+            return None
         cursor = self.conn.cursor()
         band = self._get_band_id_by_name(band_name)
         guitarist_list = []
