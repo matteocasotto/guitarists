@@ -51,6 +51,7 @@ class TestDatabase(unittest.TestCase):
         self.test_db.add_guitarist_and_bands('guitarist1', None)
         self.test_db.add_guitarist_and_bands('guitarist2', 53)
         self.test_db.add_guitarist_and_bands('', 'band1')
+        self.test_db.add_guitarist_and_bands('guitarist1', ['band1', 25])
 
         self.assertFalse(self.alt_conn.execute(
             f"SELECT COUNT(*) FROM {self.tables_names[0]}").fetchone()[0])

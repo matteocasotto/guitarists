@@ -20,37 +20,37 @@ create_guitarist_and_band_table = '''CREATE TABLE IF NOT EXISTS guitarists_and_b
 
 class DatabaseManager:
     def __init__(self, filename='guitarists.db'):
-        self.conn = None
-        self.filename = filename
+        self._conn = None
+        self._filename = filename
         self._create_connection()
         self._create_tables()
 
     def _create_connection(self):
         try:
-            self.conn = sqlite3.connect(self.filename, isolation_level=None)
+            self._conn = sqlite3.connect(self._filename, isolation_level=None)
         except Exception:
             pass
 
     def close_connection(self):
         """Close the database's connection"""
-        self.conn.close()
+        self._conn.close()
 
     def clear(self):
         """Delete all tables from the database"""
-        cursor = self.conn.cursor()
+        cursor = self._conn.cursor()
 
         cursor.execute('DROP TABLE guitarists')
         cursor.execute('DROP TABLE bands')
         cursor.execute('DROP TABLE guitarists_and_bands')
 
     def _create_tables(self):
-        cursor = self.conn.cursor()
+        cursor = self._conn.cursor()
         cursor.execute(create_guitarist_table)
         cursor.execute(create_bands_table)
         cursor.execute(create_guitarist_and_band_table)
 
     def _add_guitarist(self, guitarist_name):
-        cursor = self.conn.cursor()
+        cursor = self._conn.cursor()
         try:
             cursor.execute('INSERT INTO guitarists(full_name) VALUES(?)',
                            (guitarist_name,))
@@ -59,7 +59,7 @@ class DatabaseManager:
             return self._get_guitarist_id_by_name(guitarist_name)
 
     def _add_band(self, band_name):
-        cursor = self.conn.cursor()
+        cursor = self._conn.cursor()
         try:
             cursor.execute('INSERT INTO bands(name) VALUES(?)',
                            (band_name,))
@@ -72,11 +72,20 @@ class DatabaseManager:
 
         Parameters:
             guitarist_name (str): the name of the guitarist
-            bands (str): a list of bands
+            bands Union[list(str), str]: a list of bands
         """
-        cursor = self.conn.cursor()
+        if not isinstance(guitarist_name, str) or not isinstance(bands, (str, list)):
+            return
+        if not guitarist_name:
+            return
+        if isinstance(bands, list):
+            if not all(isinstance(x, str) for x in bands):
+                return
+        cursor = self._conn.cursor()
         guitarist_id = self._add_guitarist(guitarist_name)
         if guitarist_id:
+            if isinstance(bands, str):
+                bands = [bands]
             for band in bands:
                 band_id = self._add_band(band)
                 if band_id:
@@ -84,38 +93,50 @@ class DatabaseManager:
                                    (guitarist_id, band_id))
 
     def _get_guitarist_id_by_name(self, guitarist_name):
-        cursor = self.conn.cursor()
+        cursor = self._conn.cursor()
         try:
             guitarist = cursor.execute('SELECT id FROM guitarists WHERE full_name=?',
                                        (guitarist_name,))
-            return guitarist.fetchone()[0]
+            guitarist = guitarist.fetchone()
+            if guitarist:
+                return guitarist[0]
+            return None
         except sqlite3.Error:
             return None
 
     def _get_band_id_by_name(self, band_name):
-        cursor = self.conn.cursor()
+        cursor = self._conn.cursor()
         try:
             band = cursor.execute('SELECT id FROM bands WHERE name=?',
                                   (band_name,))
-            return band.fetchone()[0]
+            band = band.fetchone()
+            if band:
+                return band[0]
+            return None
         except sqlite3.Error:
             return None
 
     def _get_guitarist_name_by_id(self, id):
-        cursor = self.conn.cursor()
+        cursor = self._conn.cursor()
         try:
             guitarist = cursor.execute('SELECT full_name FROM guitarists WHERE id=?',
                                        (id,))
-            return guitarist.fetchone()[0]
+            guitarist = guitarist.fetchone()
+            if guitarist:
+                return guitarist[0]
+            return None
         except sqlite3.Error:
             return None
 
     def _get_band_name_by_id(self, id):
-        cursor = self.conn.cursor()
+        cursor = self._conn.cursor()
         try:
             band = cursor.execute('SELECT name FROM bands WHERE id=?',
                                   (id,))
-            return band.fetchone()[0]
+            band = band.fetchone()
+            if band:
+                return band[0]
+            return None
         except sqlite3.Error:
             return None
 
@@ -125,7 +146,7 @@ class DatabaseManager:
         Parameters:
             guitarist_name (str): the name of the guitarist
         """
-        cursor = self.conn.cursor()
+        cursor = self._conn.cursor()
         guitarist = self._get_guitarist_id_by_name(guitarist_name)
         band_list = []
         if guitarist:
@@ -150,7 +171,7 @@ class DatabaseManager:
         Parameters:
             band_name (str): the name of the band
         """
-        cursor = self.conn.cursor()
+        cursor = self._conn.cursor()
         band = self._get_band_id_by_name(band_name)
         guitarist_list = []
         if band:
