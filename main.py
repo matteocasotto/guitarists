@@ -1,9 +1,14 @@
 #! /usr/bin/env python3
 
 from guitarists import check_guitarist, check_band
+from database.database_manager import DatabaseManager
 
-check_guitarist("Kirk Hammet")
-check_guitarist("Young Signorino")
-check_band("Guns'n Roses")
-check_band("Ricchi e Poveri")
+db_manager = DatabaseManager()
 
+a = check_guitarist(db_manager, "Kirk Hammett")
+b = check_guitarist(db_manager, "Young Signorino")
+c = check_band(db_manager, "Guns N' Roses")
+d = check_band(db_manager, "Ricchi e Poveri")
+
+print(a, b, c, d)
+db_manager.close_connection()
