@@ -2,7 +2,7 @@ import os
 import unittest
 import sqlite3
 
-from database.database_manager import DatabaseManager
+from utils.database.database_manager import DatabaseManager
 
 
 class TestDatabase(unittest.TestCase):

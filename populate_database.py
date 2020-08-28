@@ -5,10 +5,10 @@ import json
 import requests
 import re
 
-from database.database_manager import DatabaseManager
+from utils.database.database_manager import DatabaseManager
 
 parser = argparse.ArgumentParser()
-parser.add_argument('d', '--delete', dest='delete',
+parser.add_argument('-d', '--delete', dest='delete',
                     default=False, action='store_true', help='Delete database')
 args = parser.parse_args()
 

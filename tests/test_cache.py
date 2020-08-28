@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from cache.csv_cacher import CsvCacher
+from utils.cache.csv_cacher import CsvCacher
 
 
 class Testcache(unittest.TestCase):
