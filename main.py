@@ -6,7 +6,8 @@ from utils.cache.csv_cacher import CsvCacher
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-nc', '--no-cache', dest='cache',
-                    default=False, action='store_true', help='Do not save to csv the cache')
+                    default=False, action='store_true',
+                    help='Do not save to csv the cache')
 args = parser.parse_args()
 
 write_cache = True

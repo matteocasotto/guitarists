@@ -22,10 +22,14 @@ if args.delete:
 else:
 
     r = requests.get(
-        'https://en.wikipedia.org/w/api.php?action=query&prop=revisions&titles=list_of_guitarists&rvslots=*&rvprop=content&formatversion=2&format=json')
+        ('https://en.wikipedia.org/w/api.php?action=query&prop=revisions&'
+         'titles=list_of_guitarists&rvslots=*&rvprop=content&formatversion=2'
+         '&format=json')
+    )
 
     r = r.json()
-    content = r['query']['pages'][0]['revisions'][0]['slots']['main']['content']
+    content = r['query']['pages'][0]['revisions']
+    content = content[0]['slots']['main']['content']
 
     guitarist_bands_dict = {}
 

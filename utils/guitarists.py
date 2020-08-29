@@ -34,6 +34,7 @@ def check_band(db_manager, band_name):
         if guitarists:
             if len(guitarists) == 1:
                 return f'The guitar hero of {band_name} is {guitarists[0]}.'
-            return f'The guitar heroes of {band_name} are {", ".join(x for x in guitarists)}.'
+            return (f'The guitar heroes of {band_name} are '
+                    f'{", ".join(x for x in guitarists)}.')
         return f"Sorry, we don't know who is the guitar hero of {band_name}."
     return None

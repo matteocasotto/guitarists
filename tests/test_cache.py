@@ -26,7 +26,8 @@ class Testcache(unittest.TestCase):
         self.assertEqual([], self.test_cacher._cache)
 
     def test_write_with_valid_item(self):
-        """Test file write cache correctly to file when there is one element in cache"""
+        """Test file write cache correctly to file
+        when there is one element in cache"""
         self.test_cacher.add_to_cache('question', 'answer')
         self.test_cacher.write_cache()
 
@@ -48,7 +49,8 @@ class Testcache(unittest.TestCase):
         self.assertEqual(i, len(self.test_cacher._cache))
 
     def test__write_with_no_item(self):
-        """Test file write cache correctly to file when there are no elements in cache"""
+        """Test file write cache correctly to file
+        when there are no elements in cache"""
         self.test_cacher.write_cache()
 
         self.assertTrue(os.path.exists(self.test_cache_file))

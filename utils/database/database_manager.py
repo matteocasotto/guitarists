@@ -10,12 +10,13 @@ create_bands_table = '''CREATE TABLE IF NOT EXISTS bands (
                             name TEXT NOT NULL UNIQUE
                         );'''
 
-create_guitarist_and_band_table = '''CREATE TABLE IF NOT EXISTS guitarists_and_bands (
-                                        guitarist_id INTEGER NOT NULL,
-                                        band_id INTEGER NOT NULL,
-                                        FOREIGN KEY(guitarist_id) REFERENCES guitarists (id),
-                                        FOREIGN KEY(band_id) REFERENCES bands (id)
-                                    );'''
+create_combined_table = '''CREATE TABLE IF NOT EXISTS guitarists_and_bands (
+                            guitarist_id INTEGER NOT NULL,
+                            band_id INTEGER NOT NULL,
+                            FOREIGN KEY(guitarist_id)
+                            REFERENCES guitarists (id),
+                            FOREIGN KEY(band_id) REFERENCES bands (id)
+                        );'''
 
 
 class DatabaseManager:
@@ -47,7 +48,7 @@ class DatabaseManager:
         cursor = self._conn.cursor()
         cursor.execute(create_guitarist_table)
         cursor.execute(create_bands_table)
-        cursor.execute(create_guitarist_and_band_table)
+        cursor.execute(create_combined_table)
 
     def _add_guitarist(self, guitarist_name):
         cursor = self._conn.cursor()
@@ -74,7 +75,8 @@ class DatabaseManager:
             guitarist_name (str): the name of the guitarist
             bands Union[list(str), str]: a list of bands
         """
-        if not isinstance(guitarist_name, str) or not isinstance(bands, (str, list)):
+        if (not isinstance(guitarist_name, str) or
+                not isinstance(bands, (str, list))):
             return
         if not guitarist_name:
             return
@@ -89,14 +91,19 @@ class DatabaseManager:
             for band in bands:
                 band_id = self._add_band(band)
                 if band_id:
-                    cursor.execute('INSERT INTO guitarists_and_bands(guitarist_id, band_id) VALUES(?, ?)',
-                                   (guitarist_id, band_id))
+                    cursor.execute(
+                        ('INSERT INTO guitarists_and_bands'
+                         '(guitarist_id, band_id) VALUES(?, ?)'),
+                        (guitarist_id, band_id)
+                    )
 
     def _get_guitarist_id_by_name(self, guitarist_name):
         cursor = self._conn.cursor()
         try:
-            guitarist = cursor.execute('SELECT id FROM guitarists WHERE full_name=?',
-                                       (guitarist_name,))
+            guitarist = cursor.execute(
+                'SELECT id FROM guitarists WHERE full_name=?',
+                (guitarist_name,)
+            )
             guitarist = guitarist.fetchone()
             if guitarist:
                 return guitarist[0]
@@ -119,8 +126,10 @@ class DatabaseManager:
     def _get_guitarist_name_by_id(self, id):
         cursor = self._conn.cursor()
         try:
-            guitarist = cursor.execute('SELECT full_name FROM guitarists WHERE id=?',
-                                       (id,))
+            guitarist = cursor.execute(
+                'SELECT full_name FROM guitarists WHERE id=?',
+                (id,)
+            )
             guitarist = guitarist.fetchone()
             if guitarist:
                 return guitarist[0]
@@ -153,8 +162,11 @@ class DatabaseManager:
         band_list = []
         if guitarist:
             try:
-                bands = cursor.execute('SELECT band_id FROM guitarists_and_bands WHERE guitarist_id=?',
-                                       (guitarist,))
+                bands = cursor.execute(
+                    ('SELECT band_id FROM guitarists_and_bands '
+                     'WHERE guitarist_id=?'),
+                    (guitarist,)
+                )
                 bands = bands.fetchall()
 
                 for band in bands:
@@ -180,8 +192,11 @@ class DatabaseManager:
         guitarist_list = []
         if band:
             try:
-                guitarists = cursor.execute('SELECT guitarist_id FROM guitarists_and_bands WHERE band_id=?',
-                                            (band,))
+                guitarists = cursor.execute(
+                    ('SELECT guitarist_id FROM guitarists_and_bands '
+                     'WHERE band_id=?'),
+                    (band,)
+                )
                 guitarists = guitarists.fetchall()
 
                 for guitarist in guitarists:
