@@ -1,6 +1,10 @@
 ## Implementation of a Database of guitar heroes
 
-In this repository you can find an interface to a database of guitarists and their bands. An user can query the database by providing a name of a guitarist or of a band. 
+In this repository you can find an interface to a database of guitarists and their bands. 
+
+### Our goal
+
+We want to provide to users a simple way to interact with this database. In fact, an user can query the database by providing a name of a guitarist or of a band.
 
 ### How to run
 
